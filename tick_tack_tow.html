@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f7f7f7;
+    margin-top: 50px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .cell {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5em;
+    background: white;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    line-height: 100px;
+  }
+
+  .cell:hover {
+    background-color: #eee;
+  }
+
+  #status {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tic Tac Toe</h1>
+<div class="board" id="board"></div>
+<div id="status"></div>
+<button onclick="restart()">Restart</button>
+
+<script>
+  const board = document.getElementById("board");
+  const statusDiv = document.getElementById("status");
+  let cells = [];
+  let currentPlayer = "X";
+  let gameOver = false;
+
+  function createBoard() {
+    board.innerHTML = "";
+    cells = [];
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.addEventListener("click", () => handleClick(i));
+      board.appendChild(cell);
+      cells.push(cell);
+    }
+    statusDiv.textContent = `Player ${currentPlayer}'s turn`;
+    gameOver = false;
+  }
+
+  function handleClick(index) {
+    if (gameOver || cells[index].textContent) return;
+
+    cells[index].textContent = currentPlayer;
+
+    if (checkWin()) {
+      gameOver = true;
+      setTimeout(() => {
+        alert(`🎉 Player ${currentPlayer} wins!`);
+        restart();
+      }, 100);
+      return;
+    }
+
+    if ([...cells].every(cell => cell.textContent)) {
+      gameOver = true;
+      setTimeout(() => {
+        alert("🤝 It's a draw!");
+        restart();
+      }, 100);
+      return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    statusDiv.textContent = `Player ${currentPlayer}'s turn`;
+  }
+
+  function checkWin() {
+    const winPatterns = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    return winPatterns.some(pattern => {
+      const [a,b,c] = pattern;
+      return (
+        cells[a].textContent &&
+        cells[a].textContent === cells[b].textContent &&
+        cells[b].textContent === cells[c].textContent
+      );
+    });
+  }
+
+  function restart() {
+    currentPlayer = "X";
+    createBoard();
+  }
+
+  createBoard();
+</script>
+
+</body>
+</html>
